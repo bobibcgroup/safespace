@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ArrowLeft, Plus, Users, Trash2, Edit } from 'lucide-react'
+import { ArrowLeft, Plus, Users, Trash2, Edit, Sparkles } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useToast } from '@/components/toast-provider'
 import {
@@ -41,6 +41,7 @@ export default function UsersPage() {
   const [reassignToUserId, setReassignToUserId] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [dataCounts, setDataCounts] = useState<{ campaigns: number; notes: number } | null>(null)
+  const [seedingDemo, setSeedingDemo] = useState(false)
 
   useEffect(() => {
     if (session?.user?.role !== 'admin') {
@@ -144,6 +145,35 @@ export default function UsersPage() {
     }
   }
 
+  const handleSeedDemoCampaign = async () => {
+    setSeedingDemo(true)
+    try {
+      const res = await fetch('/api/admin/demo', {
+        method: 'POST',
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to create demo campaign')
+      }
+
+      success(
+        'Demo campaign ready',
+        'Demo user, campaign, and sample responses are now available.'
+      )
+      fetchUsers()
+    } catch (error: any) {
+      console.error('Error creating demo campaign:', error)
+      showError(
+        'Failed to create demo campaign',
+        error.message || 'Please try again'
+      )
+    } finally {
+      setSeedingDemo(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -160,15 +190,34 @@ export default function UsersPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-3xl font-bold mb-2">User Management</h1>
               <p className="text-muted-foreground">Create and manage HR users</p>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create User
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={handleSeedDemoCampaign}
+                disabled={seedingDemo}
+              >
+                {seedingDemo ? (
+                  <>
+                    <LoadingSpinner size="sm" className="mr-2" />
+                    Seeding...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Seed Demo Data
+                  </>
+                )}
+              </Button>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create User
+              </Button>
+            </div>
           </div>
         </div>
 
