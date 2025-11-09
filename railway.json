@@ -1,0 +1,49 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "project": {
+    "name": "safe-space"
+  },
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npm run start",
+    "numReplicas": 1
+  },
+  "services": [
+    {
+      "name": "safe-space-web",
+      "source": {
+        "provider": "github",
+        "repo": "<your-user>/<your-repo>",
+        "branch": "main",
+        "rootDirectory": "."
+      },
+      "envVariables": {
+        "NEXTAUTH_URL": "https://<project-name>.up.railway.app",
+        "NEXTAUTH_SECRET": "<generate-with-openssl-rand>",
+        "OPENAI_API_KEY": "<your-openai-api-key>"
+      },
+      "dependsOn": ["safe-space-db"],
+      "build": {
+        "nixpacksPlan": {
+          "phases": {
+            "install": {
+              "cmds": ["npm install"]
+            },
+            "build": {
+              "cmds": ["npm run build"]
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "safe-space-db",
+      "type": "postgres",
+      "envVariables": {
+        "DATABASE_URL": "postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=require"
+      }
+    }
+  ]
+}
