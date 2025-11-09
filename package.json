@@ -8,13 +8,15 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "create-admin": "tsx scripts/create-admin.ts",
     "send-digest": "tsx scripts/send-daily-digest.ts",
     "process-schedules": "tsx scripts/process-schedules.ts",
     "backfill-slugs": "tsx scripts/backfill-slugs.ts",
-    "create-demo-campaign": "tsx scripts/create-demo-campaign.ts"
+    "create-demo-campaign": "tsx scripts/create-demo-campaign.ts",
+    "start:railway": "(npm run db:migrate || npm run db:push) && npm run create-admin && next start"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",

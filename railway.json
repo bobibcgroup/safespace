@@ -7,7 +7,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "npm run start",
+    "startCommand": "npm run start:railway",
     "numReplicas": 1
   },
   "services": [
@@ -20,9 +20,13 @@
         "rootDirectory": "."
       },
       "envVariables": {
+        "DATABASE_URL": "${{ safe-space-db.DATABASE_URL }}",
         "NEXTAUTH_URL": "https://<project-name>.up.railway.app",
         "NEXTAUTH_SECRET": "<generate-with-openssl-rand>",
-        "OPENAI_API_KEY": "<your-openai-api-key>"
+        "OPENAI_API_KEY": "<your-openai-api-key>",
+        "DEFAULT_ADMIN_EMAIL": "admin@safespace.app",
+        "DEFAULT_ADMIN_PASSWORD": "SuperSecurePass123!",
+        "DEFAULT_ADMIN_NAME": "Safe Space Admin"
       },
       "dependsOn": ["safe-space-db"],
       "build": {
@@ -40,10 +44,7 @@
     },
     {
       "name": "safe-space-db",
-      "type": "postgres",
-      "envVariables": {
-        "DATABASE_URL": "postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=require"
-      }
+      "type": "postgres"
     }
   ]
 }
