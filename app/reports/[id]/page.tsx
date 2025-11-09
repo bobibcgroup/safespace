@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,11 +22,19 @@ export default function PublicReportPage() {
   const [error, setError] = useState<string | null>(null)
   const [needsPassword, setNeedsPassword] = useState(false)
 
-  useEffect(() => {
-    checkAccess()
+  const fetchReport = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/ai/report/${campaignId}`)
+      if (res.ok) {
+        const data = await res.json()
+        setReport(data)
+      }
+    } catch (error) {
+      console.error('Error fetching report:', error)
+    }
   }, [campaignId])
 
-  const checkAccess = async () => {
+  const checkAccess = useCallback(async () => {
     try {
       const res = await fetch(`/api/campaigns/${campaignId}`)
       if (!res.ok) {
@@ -68,19 +76,11 @@ export default function PublicReportPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [campaignId, fetchReport])
 
-  const fetchReport = async () => {
-    try {
-      const res = await fetch(`/api/ai/report/${campaignId}`)
-      if (res.ok) {
-        const data = await res.json()
-        setReport(data)
-      }
-    } catch (error) {
-      console.error('Error fetching report:', error)
-    }
-  }
+  useEffect(() => {
+    checkAccess()
+  }, [checkAccess])
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

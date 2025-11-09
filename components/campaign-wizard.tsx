@@ -256,7 +256,7 @@ export function CampaignWizard({ onComplete, onCancel }: CampaignWizardProps) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                Review your campaign details above. Click "Create Campaign" to proceed.
+                Review your campaign details above. Click &quot;Create Campaign&quot; to proceed.
               </p>
             </div>
           )}

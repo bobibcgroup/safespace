@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,11 +52,7 @@ export default function CampaignDetailPage() {
   const [editStartDate, setEditStartDate] = useState('')
   const [editCloseDate, setEditCloseDate] = useState('')
 
-  useEffect(() => {
-    fetchCampaign()
-  }, [campaignId])
-
-  const fetchCampaign = async () => {
+  const fetchCampaign = useCallback(async () => {
     try {
       const res = await fetch(`/api/campaigns/${campaignId}`)
       if (!res.ok) throw new Error('Failed to fetch campaign')
@@ -79,7 +75,11 @@ export default function CampaignDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [campaignId])
+
+  useEffect(() => {
+    fetchCampaign()
+  }, [fetchCampaign])
 
   const copyLink = () => {
     if (campaign) {

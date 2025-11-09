@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,13 +23,11 @@ export default function SettingsPage() {
     weeklyDigest: true,
   })
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchSettings()
+  const fetchSettings = useCallback(async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
     }
-  }, [session])
-
-  const fetchSettings = async () => {
     try {
       const res = await fetch(`/api/users/${session?.user?.id}`)
       if (res.ok) {
@@ -46,7 +44,11 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    fetchSettings()
+  }, [fetchSettings])
 
   const saveSettings = async () => {
     if (!session?.user?.id) return

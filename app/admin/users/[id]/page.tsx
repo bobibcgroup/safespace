@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,11 +36,7 @@ export default function EditUserPage() {
     telegramChatId: '',
   })
 
-  useEffect(() => {
-    fetchUser()
-  }, [userId])
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await fetch(`/api/users/${userId}`)
       if (!res.ok) throw new Error('Failed to fetch user')
@@ -58,7 +54,11 @@ export default function EditUserPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [showError, userId])
+
+  useEffect(() => {
+    fetchUser()
+  }, [fetchUser])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
