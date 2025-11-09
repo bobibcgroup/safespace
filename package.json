@@ -16,7 +16,7 @@
     "process-schedules": "tsx scripts/process-schedules.ts",
     "backfill-slugs": "tsx scripts/backfill-slugs.ts",
     "create-demo-campaign": "tsx scripts/create-demo-campaign.ts",
-    "start:railway": "(npm run db:migrate || npm run db:push) && npm run create-admin && next start"
+    "start:railway": "npm run db:migrate && npm run db:push && npm run create-admin && next start"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",
